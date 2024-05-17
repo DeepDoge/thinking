@@ -85,7 +85,7 @@ but you can do this.
 type Foo { foo: string }
 
 func print(foo: Foo) {
-    log("foo: {foo}")
+    log("foo: {foo.foo}")
 }
 
 var foo = Foo { foo: "hello" }
