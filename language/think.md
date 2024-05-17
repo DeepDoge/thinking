@@ -67,7 +67,8 @@ getFooLike(foo1) // works
 ```
 
 also any anonymously defined argument types are considered traits,
-because if they were types we would be able to call them with anything
+because if they were types we wouldn't be able to call them with anything
+because remember, types are branded, and not signature based
 
 ```ts
 type Foo { foo: string }
