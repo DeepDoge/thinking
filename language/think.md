@@ -181,3 +181,124 @@ func makeNoise(noiseMaker: NoiseMaker) {
     noiseMaker.noise()
 }
 ```
+
+also lets not forget the `ref`keyword
+we dont want random symbols or characters making the code weird to read like in Rust or C++.
+
+```ts
+func noise(duck: ref Duck) {
+    // ...
+}
+```
+
+function above gets a reference to the noise, not copy.
+and actually you have to use ref in order to implement trait functions.
+so all of the above trait function examples should say `ref` before type
+
+we also have `in` keyword which is same as `ref` but immutable/readonly
+
+```ts
+func noise(duck: in Duck) {
+    /// ...
+}
+```
+
+also we have `export` keyword, to expose stuff out in many contexts.
+
+```ts
+func example() {
+    var a = 1
+    export a
+    var b = 2
+    export b
+}
+```
+
+which does the same thing as:
+
+```ts
+func example() {
+    var a = 1
+    var b = 2
+
+    return { a, b } // also creates an anonymous type (not trait)
+}
+```
+
+also for trait function you also have to use `export` keyword too
+
+```ts
+export func noise(_: in Duck) {
+    log("quack")
+}
+```
+
+so all of the trait functions above should be defined like this ^ example above
+
+ok namespaces also use export keyword so some example
+
+`file_a`
+
+```ts
+namespace example {
+    func hello() { // private
+        log("hello")
+    }
+
+    export func sayHello() { // exposed
+        hello()
+    }
+}
+```
+
+`file_b`
+
+```ts
+example.hello(); // fails
+example.sayHello(); // works
+
+namespace example {
+  sayHello(); // works
+  hello(); // fails
+}
+```
+
+advanced namespace behaviour
+
+```ts
+namespace example {
+    export type Foo { value: string }
+    export func printFoo(foo: in { value: string }) {
+        log(foo.value)
+    }
+
+    var foo = { value: "hello" }
+    foo.printFoo() // logs: "hello"
+}
+
+using example { Foo }
+
+var foo = Foo { value: "hello" }
+foo.printFoo(); // logs: "hello"
+
+var bar = { value: "hello" }
+bar.printFoo(); // fails
+```
+
+so we have a function called printFoo
+that gets an arg that satisfies { value: string } anonymous trait
+
+so when we define a value called `foo` inside the `example` namespace we can say `foo.printFoo()`.
+
+but when we do the same thing outside the `example` namespace
+with the anonymous type { value: string } of `bar` it fails.
+
+its because the anonymous type of `bar` doesnt belong to `example` namespace.
+
+but when we use the type `Foo` that is imported from the namespace `example` we can say `printFoo()` because `Foo`defined inside the
+same namespace as the `printFoo()` function.
+
+i thought about this behavior to prevent the autocomplete trashing
+
+but if i can find a better solution instead of using namespaces
+then maybe i can throw this into trash
